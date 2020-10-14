@@ -121,7 +121,9 @@
 
     
 
- ## TCP 实现聊天系统
+ ## 5. TCP实践
+
+###  实现聊天系统
 
 - 服务端设计
 
@@ -254,14 +256,11 @@
   }
   ```
 
+### TCP实现文件上传
 
+- 前言
 
-
-## TCP实现文件上传
-
-### 前言
-
-先找到一个图片，放到根目录当中.
+  先找到一个图片，放到根目录当中。
 
 - 服务端设计
 
@@ -352,4 +351,138 @@
   }
   ```
 
+
+
+
+## 6. UDP实践
+
+###  简单应用
+
+- 前言
+
+  UDP是面向无连接的通信协议，该协议进行的动作只有两个：1. 建立Socket  2. 发送数据包
+
+- 实验
+
+  ```java
+  //发送端
+  package com.zengwei.Demo03;
+  import java.net.*;
+  public class UDPClient {
+      public static void main(String[] args) throws Exception {
+          //1.建立一个socket
+          DatagramSocket  socket = new DatagramSocket();
+          //2. 建立包
+          String message="hello server";
+          //获取发送目标地址
+          InetAddress localhost = InetAddress.getByName("localhost");
+          int port =9999;
+          DatagramPacket datagramPacket = new DatagramPacket(message.getBytes(), 0, message.getBytes().length, localhost, port);//注意第三个参数为字节数组的长度，而非字符长度
+          //3. 发送包
+          socket.send(datagramPacket);
+          //4. 关闭流
+          socket.close();
+      }
+  }
   
+  
+  
+  //接收端
+  package com.zengwei.Demo03;
+  import java.net.DatagramPacket;
+  import java.net.DatagramSocket;
+  import java.net.SocketException;
+  public class UDPServer {
+      public static void main(String[] args) throws  Exception {
+          //开放端口
+          DatagramSocket socket = new DatagramSocket(9999);
+          //接受包\数据
+          byte[] bytes = new byte[1024];
+          DatagramPacket  Packet = new DatagramPacket(bytes, 0, bytes.length);
+          socket.receive(Packet);      //阻塞方式接收数据包
+          System.out.println(Packet.getAddress().getHostAddress());
+          System.out.println(new String(Packet.getData()));//通过构造器将bytes类型转换成string类型
+  
+          socket.close();
+  
+      }
+  }
+  
+  ```
+
+### UDP实现简单的聊天系统
+
+#### 1. 单向通信
+
+```java
+//sender
+package com.zengwei.UDP_Chat;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetSocketAddress;
+import java.net.SocketException;
+
+public class Sender {
+    public static void main(String[] args) throws Exception {
+        DatagramSocket socket = new DatagramSocket(8888);
+        //准备数据，从控制台读取
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
+       while(true)
+       {
+           String data=bufferedReader.readLine();
+           byte[] bytes = data.getBytes();
+           DatagramPacket Packet = new DatagramPacket(bytes,0,bytes.length,new InetSocketAddress("localhost",6666));
+           socket.send(Packet);
+           if(data.equals("bye"))
+           {
+               break;
+           }
+       }
+
+
+        bufferedReader.close();
+        socket.close();
+    }
+}
+
+//receiver
+package com.zengwei.UDP_Chat;
+
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.SocketException;
+
+public class Receiver {
+    public static void main(String[] args) throws Exception {
+        DatagramSocket socket = new DatagramSocket(6666);
+        while (true)
+        {
+            //准备接受数据
+            byte[]  container = new byte[1024];
+            DatagramPacket Packet = new DatagramPacket(container,0,container.length);
+            socket.receive(Packet);  						  //阻塞式接受包裹
+
+            //判断是否断开
+            byte[] data=Packet.getData();                      //将包裹拆开
+            String ReceiveData=new String(data,0,data.length); //string格式化
+            System.out.println(ReceiveData);
+            if(ReceiveData.equals("bye"))
+            {
+                break;
+            }
+        }
+        socket.close();
+    }
+}
+
+```
+
+#### 2. 双向通信
+
+
+
+
+
