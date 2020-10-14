@@ -254,4 +254,102 @@
   }
   ```
 
+
+
+
+## TCP实现文件上传
+
+### 前言
+
+先找到一个图片，放到根目录当中.
+
+- 服务端设计
+
+  ```java
+  package com.zengwei.Demo02;
+  
+  import java.io.*;
+  import java.net.ServerSocket;
+  import java.net.Socket;
+  
+  public class TCPServer {
+      public static void main(String[] args) throws IOException {
+          //1. 创建地址
+          ServerSocket serverSocket = new ServerSocket(9000);
+          //2. 等待连接
+          Socket accept = serverSocket.accept();
+          //3. 获取输入流
+          InputStream inputStream = accept.getInputStream();
+          //4. 文件输入
+          FileOutputStream fileOutputStrea=new FileOutputStream(new File("receive.jpg"));
+          byte[] buffer=new byte[1024];
+          int len=0;
+          while((len=inputStream.read(buffer))!=-1)
+          {
+              fileOutputStrea.write(buffer,0,len);
+          }
+          //5. 通知客户端我已经接受完毕，可以关闭资源了
+          OutputStream  outputStream = accept.getOutputStream();
+           outputStream.write("Geting is end! you can close the resources".getBytes());
+  
+           outputStream.close();
+           fileOutputStrea.close();
+           inputStream.close();
+           accept.close();
+           serverSocket.close();
+      }
+  }
+  
+  ```
+
+  
+
+- 客户端设计
+
+  ```java
+  package com.zengwei.Demo02;
+  
+  import java.io.*;
+  import java.net.Inet4Address;
+  import java.net.InetAddress;
+  import java.net.Socket;
+  import java.net.UnknownHostException;
+  
+  public class TCPClient {
+      public static void main(String[] args) throws Exception {
+          //1. 创建一个连接
+          Socket socket = new Socket(Inet4Address.getByName("127.0.0.1"),9000);
+          //2.创建一个输出流
+          OutputStream outputStream = socket.getOutputStream();
+          //3. 读取文件(此处为图片)
+          FileInputStream fis=new FileInputStream(new File("dog.jpg"));
+          //4. 写入流
+          byte[] buffer=new byte[1024];
+          int len=0;
+          while((len=fis.read(buffer))!=-1)
+          {
+              outputStream.write(buffer,0,len);
+          }
+          //通知服务器我已经发送完毕，这一步很重要，否则会造成阻塞
+          socket.shutdownOutput();
+          //判断服务器是否收到消息
+          InputStream inputStream = socket.getInputStream();
+          //String Bytes[]
+          ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+          byte [] buffer2=new byte[1024];
+          int len2;
+          while((len2=inputStream.read(buffer2))!=-1)
+          {
+              byteArrayOutputStream.write(buffer2,0,len2);
+          }
+          System.out.println(byteArrayOutputStream.toString());
+  
+          //5. 关闭资源
+          fis.close();
+          outputStream.close();
+          socket.close();
+      }
+  }
+  ```
+
   
