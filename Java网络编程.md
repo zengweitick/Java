@@ -482,7 +482,151 @@ public class Receiver {
 
 #### 2. 双向通信
 
+- 前言
 
+  双向通信由于实时性与不同步因素，因此需要使用多线程技术来实现
+
+- 实验代码
+
+  - 抽象出：发送和接收类
+
+    *注：代码和上节没有变，只是改变了某些函数的位置和参数的替换*
+
+    ```java
+    //发送类
+    package com.zengwei.UDP_Chat;
+    
+    import java.io.BufferedReader;
+    import java.io.InputStreamReader;
+    import java.net.DatagramPacket;
+    import java.net.DatagramSocket;
+    import java.net.InetSocketAddress;
+    //发送消息的工具接口类实现
+    public class TalkSender implements Runnable{
+        DatagramSocket socket =null;
+        BufferedReader bufferedReader =null;
+        private   int  FromPort ;  //发送方port
+        private  String toIP;     //接收方IP
+        private   int  toPort;   //接收方端口
+    
+        public TalkSender( int fromPort, String toIP,  int toPort) {
+            this.FromPort=fromPort;
+            this.toIP = toIP;
+            this.toPort = toPort;
+            try {
+                socket=new DatagramSocket(FromPort);
+                bufferedReader = new BufferedReader(new InputStreamReader(System.in));
+            }catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+    
+        @Override
+        public void run() {
+          // socket = new DatagramSocket(8888);
+            //准备数据，从控制台读取
+            //bufferedReader = new BufferedReader(new InputStreamReader(System.in));
+            while(true)
+            {
+                try {
+                    String data=bufferedReader.readLine();
+                    byte[] bytes = data.getBytes();
+                    DatagramPacket Packet = new DatagramPacket(bytes,0,bytes.length,new InetSocketAddress(this.toIP,this.toPort));
+                    socket.send(Packet);
+                    if(data.equals("bye"))
+                    {
+                        break;
+                    }
+                }catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+            socket.close();
+        }
+    }
+    
+    
+    
+    //接收类
+    package com.zengwei.UDP_Chat;
+    
+    import java.net.DatagramPacket;
+    import java.net.DatagramSocket;
+    
+    public class TalkReceiver implements Runnable{
+        DatagramSocket socket =null;
+        private int port;
+        private String person;
+        public TalkReceiver(int port,String person) {
+            this.port = port;
+            this.person=person;
+            try {
+                socket = new DatagramSocket(port);
+            }catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+    
+        @Override
+        public void run() {
+            while (true)
+            {
+                try {
+                    byte[]  container = new byte[1024];
+                    DatagramPacket Packet = new DatagramPacket(container,0,container.length);
+                    socket.receive(Packet);  //阻塞式接受包裹
+                    //判断断开
+                    byte[] data=Packet.getData();
+                    String ReceiveData=new String(data,0,data.length);
+                    System.out.println(person+"："+ReceiveData);
+                    if(ReceiveData.equals("bye"))
+                    {
+                        break;
+                    }
+                }catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+                //准备接受数据
+    
+            }
+            socket.close();
+        }
+    }
+    
+    ```
+
+    
+
+  - 编写操作对象：此处以学生和老师对话来作为例子
+
+    ```java
+    //学生
+    package com.zengwei.UDP_Chat;
+    
+    public class Student_1 {
+        public static void main(String[] args) {
+            new Thread(new TalkSender(1111,"localhost",8888)).start();
+            new Thread(new TalkReceiver(9999,"老师")).start();
+        }
+    }
+    
+    //老师
+    package com.zengwei.UDP_Chat;
+    
+    public class Teacher_1 {
+        public static void main(String[] args) {
+            new Thread(new TalkSender(5555,"localhost",9999)).start(); //要与学生的接收端口一致
+            new Thread(new TalkReceiver(8888,"学生")).start();          //要与学生的发送端口一致
+        }
+    }
+    
+    ```
+
+    
 
 
 
