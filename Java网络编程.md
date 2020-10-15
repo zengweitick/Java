@@ -630,3 +630,83 @@ public class Receiver {
 
 
 
+## 8. URL实现下载网络资源
+
+- 前言
+
+  URL是统一资源定位符，在本机（本机文件资源路径）或者网络上（网址）等都是URL。
+
+  组成部分
+
+  ```
+  协议：//IP地址：端口/项目名/资源名
+  ```
+
+
+
+- 实验
+
+  ```java
+  //1. 下载tomcat 文件
+  package com.zengwei.URLDemo01;
+  import java.io.FileOutputStream;
+  import java.io.InputStream;
+  import java.net.HttpURLConnection;
+  import java.net.MalformedURLException;
+  import java.net.URL;
+  import java.net.URLConnection;
+  
+  public class URLDownLoad {
+  
+      public static void main(String[] args) throws  Exception {
+          //1. 下载地址
+          URL url = new URL("http://localhost:8080/zengweiTest/importent.txt");
+          //连接到这个资源
+          HttpURLConnection   urlConnection = (HttpURLConnection) url.openConnection();
+          InputStream inputStream = urlConnection.getInputStream();
+          FileOutputStream fileOutputStream = new FileOutputStream("GetFile.txt");
+          byte[] bytes = new byte[1024];
+          int len=0;
+          while((len=inputStream.read(bytes))!=-1)
+          {
+              fileOutputStream.write(bytes,0, len);
+          }
+          fileOutputStream.close();
+          inputStream.close();
+          urlConnection.disconnect();
+      }
+  }
+  
+  //2. 在网易云下载音乐，在浏览器必须在播放时以检查的方式查看资源文件名（网易云以.m4a结尾）
+  package com.zengwei.URLDemo01;
+  import java.io.FileOutputStream;
+  import java.io.InputStream;
+  import java.net.HttpURLConnection;
+  import java.net.MalformedURLException;
+  import java.net.URL;
+  import java.net.URLConnection;
+  
+  public class URLDownLoad {
+  
+      public static void main(String[] args) throws  Exception {
+          //1. 下载地址
+          URL url = new URL("https://m10.music.126.net/20201015222556/faad5c474bda35c9f5bd2e730858c146/yyaac/545b/060e/065b/c1c20e3fb81d05fc54f0116750f8dc70.m4a");
+          //连接到这个资源
+          HttpURLConnection   urlConnection = (HttpURLConnection) url.openConnection();
+          InputStream inputStream = urlConnection.getInputStream();
+          FileOutputStream fileOutputStream = new FileOutputStream("my.m4a");
+          byte[] bytes = new byte[1024];
+          int len=0;
+          while((len=inputStream.read(bytes))!=-1)
+          {
+              fileOutputStream.write(bytes,0, len);
+          }
+          fileOutputStream.close();
+          inputStream.close();
+          urlConnection.disconnect();
+      }
+  }
+  
+  ```
+
+  
