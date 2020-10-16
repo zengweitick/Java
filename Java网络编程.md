@@ -709,7 +709,3 @@ public class Receiver {
   
   ```
 
-
-
-END
-
