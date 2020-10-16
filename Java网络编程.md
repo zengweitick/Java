@@ -711,7 +711,5 @@ public class Receiver {
 
 
 
+END
 
-- END
-
-  
