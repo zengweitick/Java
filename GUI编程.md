@@ -269,10 +269,191 @@
     - 实验结果
 
       ![image-20201019112824001](C:\Users\曾伟\Desktop\typora笔记\Github\项目\Java\assets\image-20201019112824001.png)
+      
+    - 总结、
+    
+      三种布局重点是如何灵活运用嵌套的方式使用三种布局。
 
-- 总结
+## 1. 事件监听
 
-  三种布局重点是如何灵活运用嵌套的方式使用三种布局。
+  ```java
+  package com.zengwei.Lesson02;
+  
+  import java.awt.*;
+  import java.awt.event.ActionEvent;
+  import java.awt.event.ActionListener;
+  import java.awt.event.WindowAdapter;
+  import java.awt.event.WindowEvent;
+  
+  public class TestAction {
+      public static void main(String[] args) {
+          Frame frame = new Frame();
+          Button button = new Button("Press");
+          MyListener myListener = new MyListener();
+          button.addActionListener(myListener);
+          button.setActionCommand("first");    //给事件传值
+          frame.add(button);
+          frame.pack();
+          windowsClose(frame);
+          frame.setVisible(true);
+      }
+      private  static  void windowsClose(Frame frame)
+      {
+          frame.addWindowListener(new WindowAdapter() {
+              @Override
+              public void windowClosing(WindowEvent e) {
+                   System.exit(0);
+              }
+          });
+      }
+  }
+  class MyListener implements ActionListener
+  {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+          System.out.println(e.getActionCommand()+"you Pressed me");//获取值打印
+      }
+  }
+  //监听类可以只写一个，对不同的事件分辨可以通过ActionEvent e参数获取
+  ```
+
+
+
+## 2. 输入框TextField监听
+
+```java
+package com.zengwei.Lesson02;
+
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class TestText {
+    public static void main(String[] args) {
+      new Myframe();
+
+    }
+}
+class Myframe extends Frame
+{
+    public  Myframe()
+    {
+        TextField textField = new TextField();
+        add(textField);   //因为已经继承了Frame因此不需要写new
+        TextFieldListener textFieldListener = new TextFieldListener();
+        //按下回车键就会触发事件
+        textField.addActionListener(textFieldListener);
+        //设置成替换文本来模拟密码框
+        textField.setEchoChar('*');
+        setVisible(true);
+        pack();
+    }
+}
+class TextFieldListener implements ActionListener
+{
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        TextField textField=(TextField) e.getSource();//获取资源，并返回对象Object（该对象可以强制转化成任何对象）
+        String text = textField.getText();//在此处获取文本框的输入值
+        System.out.println(text);
+
+    }
+}
+```
+
+## 实战：编写计算器（组合+内部类的回顾）
+
+- 前言
+
+  什么是组合？
+
+  ```java
+  //如何实现A类使用B类所有功能？
+  1. 继承
+      Class A extend B
+  {
+      
+  }
+  2. 在A当中私有一个B类
+      Class A{
+      public B b;
+  }
+  ```
+
+---
+
+
+
+- 代码实现
+
+  ```java
+  package com.zengwei.Lesson02;
+  import java.awt.*;
+  import java.awt.event.ActionEvent;
+  import java.awt.event.ActionListener;
+  public class Caculater {
+      public static void main(String[] args) {
+          Calcu calcu = new Calcu();
+      }
+  }
+  //计算器类
+  class  Calcu extends Frame
+  {
+      public  Calcu()
+      {
+        //1. 一个按钮
+          Button button = new Button("=");
+  
+          //2. 三个文本框
+          TextField textField_1 = new TextField(10);//int 表示字符数
+          TextField textField_2 = new TextField(10);
+          TextField textField_3 = new TextField(10);
+          //3. 一个标签
+          Label label = new Label("+");
+          //设置监听属性
+          button.addActionListener(new CacuListener(textField_1,textField_2,textField_3));
+          //布局
+          setLayout(new FlowLayout());//流式布局
+          //在布局当中加入组件
+          add(textField_1);
+          add(label);
+          add(textField_2);
+          add(button);
+          add(textField_3);
+          //设置自适应大小
+          pack();
+          //设置可见性
+          setVisible(true);
+      }
+  }
+  //监听器类
+  class CacuListener implements ActionListener
+  {
+      //构造器设置有参方便传参
+       private TextField f1,f2,f3;
+  
+      public CacuListener(TextField f1,TextField f2,TextField f3) {
+          this.f1=f1;
+          this.f2=f2;
+          this.f3=f3;
+      }
+  
+      @Override
+      public void actionPerformed(ActionEvent e) {
+          //1. 获得加数与被加数
+          int first = Integer.parseInt(f1.getText());
+          int  second = Integer.parseInt(f2.getText());
+          //2. 将结果进行运算后放入第三个文本框当中
+          f3.setText(""+(first+second));
+          //3. 清除前两个框为下次输入做好准备
+          f1.setText("");
+          f2.setText("");
+      }
+  }
+  ```
+
+  
 
 ## Swing
 
