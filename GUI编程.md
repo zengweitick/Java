@@ -385,7 +385,7 @@ class TextFieldListener implements ActionListener
 
 
 
-- 代码实现
+- 代码实现（先面向过程的写代码，明白需要编写的东西，随后我们去优化代码）
 
   ```java
   package com.zengwei.Lesson02;
@@ -452,6 +452,157 @@ class TextFieldListener implements ActionListener
       }
   }
   ```
+
+- 代码优化
+
+  ```java
+  //用类组合类
+  package com.zengwei.Lesson02;
+  import java.awt.*;
+  import java.awt.event.ActionEvent;
+  import java.awt.event.ActionListener;
+  public class Caculater {
+      public static void main(String[] args) {
+         new Calcu().loadCacu();
+      }
+  }
+  //计算器类
+  class  Calcu extends Frame
+  {
+      TextField textField_1,textField_2,textField_3;
+      //方法
+      public void loadCacu()
+      {
+           textField_1 = new TextField(10);  
+           textField_2 = new TextField(10);
+           textField_3 = new TextField(10);
+          Button button = new Button("=");
+          button.addActionListener(new CacuListener(this));
+          Label label = new Label("+");
+          setLayout(new FlowLayout());
+          add(textField_1);
+          add(label);
+          add(textField_2);
+          add(button);
+          add(textField_3);
+          pack();
+          setVisible(true);
+      }
+  }
+  //监听器类
+  class CacuListener implements ActionListener
+  {
+      
+       Calcu  calcu=null;
+      public CacuListener( Calcu  outCacu) {
+         this.calcu=outCacu;
+      }
+      @Override
+      public void actionPerformed(ActionEvent e) {
+          int first = Integer.parseInt( calcu.textField_1.getText());
+          int  second = Integer.parseInt(calcu.textField_2.getText());
+          calcu.textField_3.setText(""+(first+second));
+          calcu.textField_1.setText("");
+          calcu.textField_2.setText("");
+      }
+  }
+  
+  ```
+
+- 内部类（为了更好的包装即：内部类最大的好处是能够畅通无阻的访问外部类的方法）
+
+  ```java
+  package com.zengwei.Lesson02;
+  
+  import java.awt.*;
+  import java.awt.event.ActionEvent;
+  import java.awt.event.ActionListener;
+  public class Caculater {
+  public static void main(String[] args) {
+         new Calcu().loadCacu();
+      }
+  }
+  //计算器类
+  class  Calcu extends Frame
+  {
+      TextField textField_1,textField_2,textField_3;
+      //方法
+      public void loadCacu()
+      {
+           textField_1 = new TextField(10); 
+           textField_2 = new TextField(10);
+           textField_3 = new TextField(10);
+          Button button = new Button("=");
+          button.addActionListener(new CacuListener());//直接调用监听不需要设置监听对象
+          Label label = new Label("+");
+          setLayout(new FlowLayout()); 
+          add(textField_1);
+          add(label);
+          add(textField_2);
+          add(button);
+          add(textField_3); 
+          pack();
+          setVisible(true);
+      }
+   //将监听器代码写入类当中省去传对象操作，同时记得声明为private私有类
+   private class CacuListener implements ActionListener
+      {
+          @Override
+          public void actionPerformed(ActionEvent e) {
+              
+               int first = Integer.parseInt(textField_1.getText());
+               int  second = Integer.parseInt(textField_2.getText());
+               textField_3.setText(""+(first+second));
+               textField_1.setText("");
+               textField_2.setText("");
+          }
+      }
+  }
+  ```
+
+  
+
+## 3. 画笔（paint）
+
+- 直接进入实验
+
+  ```java
+  package com.zengwei.Lesson02;
+  
+  import java.awt.*;
+  
+  public class Paint {
+      public static void main(String[] args) {
+        new MyPaint().loadFame();
+      }
+  
+  }
+  class MyPaint extends Frame
+  {
+      public void loadFame()
+      {
+          setBounds(200,200,600,500);
+          setVisible(true);
+      }
+      //画笔
+      @Override
+      public void paint(Graphics g) {
+          //设置画笔属性：颜色；以及功能：画画
+          g.setColor(Color.red);
+          g.drawOval(100,100,100,200);
+          g.fillOval(100,100,100,100);//画实心的圆
+          
+      }
+  }
+  //在使用画笔结束时，记得把画笔还原成最初的颜色(将设置颜色代码注释掉重新运行一遍即可)，否则下次再次使用画笔时颜色可能不一样
+  
+  ```
+
+- 结合鼠标监听事件模拟画图工具
+
+  
+
+- 
 
   
 
