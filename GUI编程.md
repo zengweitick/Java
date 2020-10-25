@@ -453,10 +453,10 @@ class TextFieldListener implements ActionListener
   }
   ```
 
-- 代码优化
+- 代码优化1--使用组合类（类中组合其他类）
 
   ```java
-  //用类组合类
+   
   package com.zengwei.Lesson02;
   import java.awt.*;
   import java.awt.event.ActionEvent;
@@ -509,7 +509,7 @@ class TextFieldListener implements ActionListener
   
   ```
 
-- 内部类（为了更好的包装即：内部类最大的好处是能够畅通无阻的访问外部类的方法）
+- 代码优化2--内部类（为了更好的包装即：内部类最大的好处是能够畅通无阻的访问外部类的方法）
 
   ```java
   package com.zengwei.Lesson02;
