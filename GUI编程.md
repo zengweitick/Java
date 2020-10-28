@@ -1,4 +1,4 @@
-# GUI编程
+# UI编程
 
 ## 准备工作
 
@@ -598,7 +598,82 @@ class TextFieldListener implements ActionListener
   
   ```
 
-- 结合鼠标监听事件模拟画图工具
+-  鼠标监听
+
+  - 实验目标
+
+    鼠标点击，在白板上产生小点
+
+  - 实验代码
+
+    ```java
+    package com.zengwei.Lesson03;
+    
+    import java.awt.*;
+    import java.awt.event.MouseAdapter;
+    import java.awt.event.MouseEvent;
+    import java.util.ArrayList;
+    import java.util.Iterator;
+    
+    public class TestMouse {
+        public static void main(String[] args) {
+            new  Myframe("画点");
+        }
+    }
+    //先创建自己的类(适配器模式)
+    class Myframe extends Frame
+    {
+       //首先画画需要画笔、监听鼠标当前的位置、需要集合来存储这个点。
+        //由于点是流通对象，因此把集合提到最高位置
+        ArrayList points;
+    
+        public Myframe(String title){
+            super(title);
+            //设置画板位置和大小
+            setBounds(200,200,400,300);
+            points=new ArrayList<>();
+            setVisible(true);
+            //添加鼠标监听器
+            this.addMouseListener(new MyMouseListener());
+        }
+    //添加内部类---画笔
+        @Override
+        public void paint(Graphics g) {
+            Iterator iterator = points.iterator();  //用迭代器不用for循环
+            while(iterator.hasNext())
+            {
+                 Point  ponit = (Point) iterator.next();//取出迭代器当中的点
+                 g.setColor(Color.blue);
+                 g.fillOval(ponit.x,ponit.y,10,10);
+            }
+        }
+        //将点加入集合当中，使得画笔进行遍历的时候能有点。
+      public void AddPoint(Point point)
+      {
+          points.add(point);
+      }
+        //实现鼠标监听事件,由于鼠标事件有好多种类，而我们只需要点击事件，因此我们采用适配器模式重写我们需要的方法即可
+        private class  MyMouseListener extends MouseAdapter
+        {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                 Myframe source = (Myframe) e.getSource();  //由于是myframe调用事件，因此强转为myframe;
+                //将此时鼠标的坐标传入集合
+                source.AddPoint(new Point(e.getX(),e.getY()));
+                source.repaint();//每次添加一个点再次让画笔重新画一次
+            }
+        }
+    }
+    
+    ```
+
+  - 代码结构示意图
+
+    ![image-20201028212957093](C:\Users\Inft\AppData\Roaming\Typora\typora-user-images\image-20201028212957093.png)
+
+- 键盘监听
+
+- 窗口监听
 
   
 
