@@ -598,7 +598,7 @@ class TextFieldListener implements ActionListener
   
   ```
 
--  鼠标监听
+- 鼠标监听
 
   - 实验目标
 
@@ -671,15 +671,8 @@ class TextFieldListener implements ActionListener
 
     ![image-20201028212957093](C:\Users\Inft\AppData\Roaming\Typora\typora-user-images\image-20201028212957093.png)
 
-- 键盘监听
-
-- 窗口监听
-
   
 
-- 
-
-  
 
 ## Swing
 
